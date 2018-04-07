@@ -11,7 +11,7 @@ def calculateColumnSum(matrix):
     m,n = matrix.shape
     return [sum([matrix[j][i] for j in range(m)]) for i in range(n)]
 
-def rearrange(debug_i, vector, col_sums, numOfDutiesLeftOnDayi, dutyCount):
+def rearrange(vector, numOfDutiesLeftOnDayi, dutyCount):
     n = -1*dutyCount
     idxOfMaxDutiesLeft = np.argpartition(numOfDutiesLeftOnDayi, n)[n:]
     for idx in idxOfMaxDutiesLeft:
@@ -34,8 +34,7 @@ if not correcInputCondition:
     sys.exit()
 #constraint - dutyPerDay * numOfDays = sum of employees dutycount and dutyCount < employeeCount
 
-for i in range(employeeCount):
-    
+for i in range(employeeCount):    
     threshold = employeeCount - dutyPerDay  #we can allow only threshold values to be set randomly without hurting column count (if all are set to 0 randomly). 
     if i < threshold:
         #a = np.random.choice([1, 0], numOfDays, p=[employeesDutyCount[i]/float(numOfDays), (numOfDays - employeesDutyCount[i])/float(numOfDays)])
@@ -46,12 +45,13 @@ for i in range(employeeCount):
         col_sums = calculateColumnSum(employees)
         numOfDutiesLeftOnDayi = [(dutyPerDay - col_sum) for col_sum in col_sums]
         a = [0] * numOfDays
-        a = rearrange(i, a, col_sums, numOfDutiesLeftOnDayi, (employeesDutyCount[i]))
+        a = rearrange(a, numOfDutiesLeftOnDayi, employeesDutyCount[i])
         employees = np.vstack([employees, a])
 
 headers = ["Day "+str(d+1) for d in range(numOfDays)]
 outFileName = 'allocation_'+str(month)+'_' + str(year)+'.csv'
 np.savetxt(outFileName, employees, delimiter=',', fmt='%s', header=','.join(headers))
+
 
 
 #temp:: if in doubt on count uncomment this and run code. U wud get each row and column count with row number.
